@@ -101,8 +101,7 @@ function getAdjacentCells(cell) {
     const adjacentCells = [];
 
     for (let r = row - 1; r <= row + 1; r++) {
-        for (let c = col - 1; c <= col + 1; c
-        ) {
+        for (let c = col - 1; c <= col + 1; c++) { // Add the increment expression here
             if (
                 r >= 0 &&
                 r < boardSize &&
@@ -114,8 +113,9 @@ function getAdjacentCells(cell) {
             }
         }
     }
-return adjacentCells;
+    return adjacentCells; // Add the missing closing curly brace for the function
 }
+
 
 function toggleFlag(cell) {
     if (cell.dataset.revealed === 'true') return;
