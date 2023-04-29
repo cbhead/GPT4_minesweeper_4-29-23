@@ -1,13 +1,25 @@
-const boardSize = 8;
-const mineCount = 10;
+let boardSize;
+let mineCount;
 let gameBoard;
+let consecutiveWins = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     gameBoard = document.querySelector('#game-board');
-    initializeGame();
+    const startGameButton = document.getElementById('start-game');
+    startGameButton.addEventListener('click', () => {
+        initializeGame();
+    });
 });
 
 function initializeGame() {
+    const boardSizeInput = document.getElementById('board-size');
+    const mineCountInput = document.getElementById('mine-count');
+    boardSize = Math.min(50, parseInt(boardSizeInput.value));
+    mineCount = Math.min(boardSize * boardSize - 1, parseInt(mineCountInput.value));
+    gameBoard.innerHTML = '';
+
+    gameBoard.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+
     generateCells();
     placeMines();
     addEventListeners();
@@ -45,6 +57,9 @@ function addEventListeners() {
                 gameOver(event.target);
             } else {
                 revealCell(event.target);
+                if (checkVictory()) {
+                    victory();
+                }
             }
         }
     });
@@ -93,20 +108,4 @@ function getAdjacentCells(cell) {
                 adjacentCells.push(gameBoard.children[r * boardSize + c]);
             }
         }
-    }
-
-    return adjacentCells;
-}
-
-function toggleFlag(cell) {
-    if (cell.dataset.revealed === 'true') return;
-    cell.dataset.flagged = cell.dataset.flagged === 'true' ? 'false' : 'true';
-    cell.style.backgroundColor = cell.dataset.flagged === 'true' ? '#f6b26b' : '#3c8dbc';
-    cell.textContent = cell.dataset.flagged === 'true' ? '🚩' : '';
-}
-
-function gameOver(cell) {
-    cell.style.backgroundColor = '#d9534f';
-    alert('Game over!');
-    game
-}
+    }}
