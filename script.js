@@ -2,6 +2,7 @@ let boardSize;
 let mineCount;
 let gameBoard;
 let consecutiveWins = 0;
+let gameInProgress = false; // Add this line
 
 document.addEventListener('DOMContentLoaded', () => {
     gameBoard = document.querySelector('#game-board');
@@ -9,11 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     startGameButton.addEventListener('click', () => {
         initializeGame();
     });
-    initializeGame(); // Move this line outside the click event listener
-}); // Close the DOMContentLoaded event listener here
-
+    initializeGame();
+});
 
 function initializeGame() {
+    gameInProgress = true; // Set gameInProgress to true when the game starts
     const boardSizeInput = document.getElementById('board-size');
     const mineCountInput = document.getElementById('mine-count');
     boardSize = Math.min(50, parseInt(boardSizeInput.value));
@@ -133,6 +134,7 @@ function checkVictory() {
 }
 
 function gameOver(mineCell) {
+    gameInProgress = false;
     mineCell.style.backgroundColor = '#d9534f';
     mineCell.textContent = '💣';
 
@@ -152,6 +154,9 @@ function gameOver(mineCell) {
 }
 
 function victory() {
+    if (!gameInProgress) return; // Add this line to prevent multiple wins for a single victory
+
+    gameInProgress = false; // Set gameInProgress to false when the player wins
     consecutiveWins++;
     updateConsecutiveWins();
     setTimeout(() => {
@@ -159,6 +164,7 @@ function victory() {
         initializeGame();
     }, 1000);
 }
+
 
 function updateConsecutiveWins() {
     const winsCount = document.getElementById('wins-count');
