@@ -113,9 +113,8 @@ function getAdjacentCells(cell) {
             }
         }
     }
-}
 return adjacentCells;
-    }
+}
 
 function toggleFlag(cell) {
     if (cell.dataset.revealed === 'true') return;
