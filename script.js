@@ -8,8 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const startGameButton = document.getElementById('start-game');
     startGameButton.addEventListener('click', () => {
         initializeGame();
-    });
+    });  initializeGame(); // Add this line to start the game when the page loads
 });
+
 
 function initializeGame() {
     const boardSizeInput = document.getElementById('board-size');
