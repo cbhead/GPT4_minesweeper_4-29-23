@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const startGameButton = document.getElementById('start-game');
     startGameButton.addEventListener('click', () => {
         initializeGame();
-});
+    });
+    initializeGame(); // Move this line outside the click event listener
+}); // Close the DOMContentLoaded event listener here
 
 
 function initializeGame() {
