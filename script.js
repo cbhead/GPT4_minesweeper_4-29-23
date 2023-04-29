@@ -82,7 +82,9 @@ function revealCell(cell) {
         cell.textContent = adjacentMineCount;
     } else {
         getAdjacentCells(cell).forEach((adjacentCell) => {
-            revealCell(adjacentCell);
+            if (adjacentCell.dataset.revealed === 'false') {
+                revealCell(adjacentCell);
+            }
         });
     }
 }
@@ -97,7 +99,8 @@ function getAdjacentCells(cell) {
     const adjacentCells = [];
 
     for (let r = row - 1; r <= row + 1; r++) {
-        for (let c = col - 1; c <= col + 1; c++) {
+        for (let c = col - 1; c <= col + 1; c
+        ) {
             if (
                 r >= 0 &&
                 r < boardSize &&
@@ -108,4 +111,55 @@ function getAdjacentCells(cell) {
                 adjacentCells.push(gameBoard.children[r * boardSize + c]);
             }
         }
-    }}
+    }
+}
+return adjacentCells;
+    }
+
+function toggleFlag(cell) {
+    if (cell.dataset.revealed === 'true') return;
+    cell.dataset.flagged = cell.dataset.flagged === 'true' ? 'false' : 'true';
+    cell.style.backgroundColor = cell.dataset.flagged === 'true' ? '#f6b26b' : '#3c8dbc';
+    cell.textContent = cell.dataset.flagged === 'true' ? '🚩' : '';
+}
+
+function checkVictory() {
+    const unclickedCells = Array.from(gameBoard.children).filter(
+        (cell) => cell.dataset.revealed === 'false'
+    );
+
+    return unclickedCells.length === mineCount;
+}
+
+function gameOver(mineCell) {
+    mineCell.style.backgroundColor = '#d9534f';
+    mineCell.textContent = '💣';
+
+    Array.from(gameBoard.children).forEach((cell) => {
+        if (cell.dataset.mine === 'true' && cell !== mineCell) {
+            cell.textContent = '💣';
+            cell.style.backgroundColor = '#333';
+        }
+    });
+
+    consecutiveWins = 0;
+    updateConsecutiveWins();
+    setTimeout(() => {
+        alert('Game Over! You hit a mine!');
+        initializeGame();
+    }, 1000);
+}
+
+function victory() {
+    consecutiveWins++;
+    updateConsecutiveWins();
+    setTimeout(() => {
+        alert('Congratulations! You won!');
+        initializeGame();
+    }, 1000);
+}
+
+function updateConsecutiveWins() {
+    const winsCount = document.getElementById('wins-count');
+    winsCount.textContent = consecutiveWins;
+}
