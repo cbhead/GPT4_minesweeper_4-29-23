@@ -16,7 +16,7 @@ function setupBoard(size) {
   }
 
   jest.resetModules();
-  const { getAdjacentCells, __setBoard } = require('./script.js');
+  const { getAdjacentCells, __setBoard } = require('../src/scripts/script.js');
   __setBoard(size, board);
   return { getAdjacentCells, board };
 }
@@ -45,3 +45,4 @@ describe('getAdjacentCells', () => {
     expect(getAdjacentCells(cell)).toHaveLength(8);
   });
 });
+
