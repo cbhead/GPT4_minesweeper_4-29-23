@@ -63,3 +63,60 @@ main {
 .cell[data-mine="true"][data-revealed="true"] {
     background-color: #d9534f;
 }
+
+form {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+form input {
+    padding: 0.5rem;
+}
+
+form button {
+    padding: 0.5rem 1rem;
+}
+
+#bookmark-list {
+    list-style: none;
+    padding: 0;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+#bookmark-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+#bookmark-list a {
+    color: #f6b26b;
+    text-decoration: none;
+}
+
+#bookmark-list button {
+    background: none;
+    border: none;
+    color: #d9534f;
+    cursor: pointer;
+}
+
+textarea {
+    width: 80%;
+    margin: 0.5rem auto;
+    display: block;
+    background: #333;
+    color: #fff;
+    border: 1px solid #3c8dbc;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+select, button {
+    padding: 0.5rem;
+    margin: 0.5rem;
+}

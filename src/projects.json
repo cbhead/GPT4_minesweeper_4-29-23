@@ -4,5 +4,17 @@
     "description": "Classic Minesweeper game built with vanilla JS.",
     "link": "projects/minesweeper.html",
     "image": "https://via.placeholder.com/300x150"
+  },
+  {
+    "title": "Bookmarks",
+    "description": "Save and manage your links locally.",
+    "link": "projects/bookmarks.html",
+    "image": "https://via.placeholder.com/300x150"
+  },
+  {
+    "title": "Text Tools",
+    "description": "Quick text transformations like uppercase or reverse.",
+    "link": "projects/tools.html",
+    "image": "https://via.placeholder.com/300x150"
   }
 ]
