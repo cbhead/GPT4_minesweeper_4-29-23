@@ -4,5 +4,17 @@
     "description": "Classic Minesweeper game built with vanilla JS.",
     "link": "projects/minesweeper.html",
     "image": "https://via.placeholder.com/300x150"
+  },
+  {
+    "title": "Bookmarks",
+    "description": "Collection of useful bookmarks.",
+    "link": "projects/bookmarks.html",
+    "image": "https://via.placeholder.com/300x150"
+  },
+  {
+    "title": "Tools",
+    "description": "Handy tools for everyday tasks.",
+    "link": "projects/tools.html",
+    "image": "https://via.placeholder.com/300x150"
   }
 ]
