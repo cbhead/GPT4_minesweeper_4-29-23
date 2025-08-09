@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startGameButton.addEventListener('click', () => {
         initializeGame();
     });
+    addEventListeners();
     initializeGame();
 });
 
@@ -25,7 +26,6 @@ function initializeGame() {
 
     generateCells();
     placeMines();
-    addEventListeners();
 }
 
 function generateCells() {
