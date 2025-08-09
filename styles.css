@@ -1,65 +1,15 @@
 body {
+    font-family: Arial, sans-serif;
     background-color: #222;
     color: #fff;
-    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
-
-h1 {
-    text-align: center;
-    color: #f6b26b;
-}
-
-main {
+header, section {
     width: 80%;
     margin: 0 auto;
+    padding: 20px 0;
 }
-
-.game-controls {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-
-.game-controls input {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-}
-
-#consecutive-wins {
-    text-align: center;
-}
-
-#game-board {
-    display: grid;
-    gap: 10px;
-    justify-items: center;
-    align-items: center;
-    padding: 20px;
-    margin: 0 auto;
-}
-
-.cell {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #3c8dbc;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #3c8dbc;
-    color: #f6b26b;
-    cursor: pointer;
-}
-
-.cell[data-flagged="true"] {
-    background-color: #f6b26b;
+nav a {
     color: #3c8dbc;
-}
-
-.cell[data-revealed="true"] {
-    background-color: #333;
-}
-
-.cell[data-mine="true"][data-revealed="true"] {
-    background-color: #d9534f;
 }
