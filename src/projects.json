@@ -7,13 +7,13 @@
   },
   {
     "title": "Bookmarks",
-    "description": "Save and manage your links locally.",
+    "description": "Collection of useful bookmarks.",
     "link": "projects/bookmarks.html",
     "image": "https://via.placeholder.com/300x150"
   },
   {
-    "title": "Text Tools",
-    "description": "Quick text transformations like uppercase or reverse.",
+    "title": "Tools",
+    "description": "Handy tools for everyday tasks.",
     "link": "projects/tools.html",
     "image": "https://via.placeholder.com/300x150"
   }
