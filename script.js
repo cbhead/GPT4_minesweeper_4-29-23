@@ -170,3 +170,13 @@ function updateConsecutiveWins() {
     const winsCount = document.getElementById('wins-count');
     winsCount.textContent = consecutiveWins;
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        getAdjacentCells,
+        __setBoard: (size, boardElement) => {
+            boardSize = size;
+            gameBoard = boardElement;
+        }
+    };
+}
