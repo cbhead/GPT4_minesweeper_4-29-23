@@ -26,13 +26,20 @@ input, textarea, select {
   border-radius: 4px;
 }
 
-#visibility-controls {
+#settings-controls {
   padding: 1rem 0;
 }
 
-#visibility-controls label {
-  display: block;
+#settings-controls .settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
+}
+
+#settings-controls .settings-row input[type="text"] {
+  margin-left: 0.5rem;
+  flex: 1;
 }
 
 .projects-grid {

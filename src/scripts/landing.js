@@ -18,11 +18,12 @@ fetch('projects.json')
   .then(response => response.json())
   .then(projects => {
     const container = document.getElementById('projects');
-    const controls = document.getElementById('visibility-controls');
+    const controls = document.getElementById('settings-controls');
 
     const stored = JSON.parse(localStorage.getItem('projectLayout') || '{}');
     const order = stored.order || projects.map(p => p.title);
     const visibility = stored.visibility || {};
+    const icons = stored.icons || {};
 
     const projectMap = new Map(projects.map(p => [p.title, p]));
     const orderedProjects = [];
@@ -40,8 +41,9 @@ fetch('projects.json')
       tile.href = project.link;
       tile.draggable = true;
       tile.dataset.title = project.title;
+      const iconClass = icons[project.title] || project.icon;
       tile.innerHTML = `
-        <i class="${project.icon} project-icon"></i>
+        <i class="${iconClass} project-icon"></i>
         <h2>${project.title}</h2>
         <p>${project.description}</p>
       `;
@@ -76,6 +78,9 @@ fetch('projects.json')
     });
 
     orderedProjects.forEach(project => {
+      const row = document.createElement('div');
+      row.className = 'settings-row';
+
       const label = document.createElement('label');
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -88,12 +93,25 @@ fetch('projects.json')
       });
       label.appendChild(checkbox);
       label.appendChild(document.createTextNode(project.title));
-      controls.appendChild(label);
+      row.appendChild(label);
+
+      const iconInput = document.createElement('input');
+      iconInput.type = 'text';
+      iconInput.value = icons[project.title] || project.icon;
+      iconInput.addEventListener('change', () => {
+        const iconEl = container.querySelector(`[data-title="${project.title}"] .project-icon`);
+        iconEl.className = `${iconInput.value} project-icon`;
+        icons[project.title] = iconInput.value;
+        saveLayout();
+      });
+      row.appendChild(iconInput);
+
+      controls.appendChild(row);
     });
 
     function saveLayout() {
       const newOrder = [...container.querySelectorAll('.project-tile')].map(tile => tile.dataset.title);
-      localStorage.setItem('projectLayout', JSON.stringify({ order: newOrder, visibility }));
+      localStorage.setItem('projectLayout', JSON.stringify({ order: newOrder, visibility, icons }));
     }
   })
   .catch(err => console.error('Error loading projects:', err));
