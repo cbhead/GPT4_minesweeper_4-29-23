@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper Game</title>
     <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-ryNyEJD7BqXc9E+u6KDAdAm8X1sC3yRyvE4s46HoPazTA/gkGEXUXMaLLq5yRvCNrI6VsgGAaHo9IoaAeTfLxw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -13,9 +14,9 @@
         <h1>Minesweeper</h1>
         <div class="game-controls">
             <label for="board-size">Board size: </label>
-            <input id="board-size" type="number" min="1" max="50" value="8">
+            <input id="board-size" type="number" min="1" max="50" value="8" placeholder="Size">
             <label for="mine-count">Mines: </label>
-            <input id="mine-count" type="number" min="1" max="2500" value="10">
+            <input id="mine-count" type="number" min="1" max="2500" value="10" placeholder="Mines">
             <button id="start-game">Start Game</button>
         </div>
         <p id="consecutive-wins">Consecutive Wins: <span id="wins-count">0</span></p>

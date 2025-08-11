@@ -4,6 +4,24 @@ body {
     font-family: Arial, sans-serif;
 }
 
+header {
+    background: #333;
+    color: #fff;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+}
+
+input, textarea, select {
+    border-radius: 4px;
+}
+
 h1 {
     text-align: center;
     color: #f6b26b;
