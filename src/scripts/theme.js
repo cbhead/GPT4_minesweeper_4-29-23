@@ -8,6 +8,18 @@
     projects: {}
   };
 
+  const PRESET_THEMES = {
+    default: DEFAULT_THEME,
+    dark: {
+      landing: {
+        background: '#222',
+        header: '#000',
+        headerText: '#fff'
+      },
+      projects: {}
+    }
+  };
+
   let theme;
   try {
     theme = JSON.parse(localStorage.getItem('themeConfig')) || DEFAULT_THEME;
@@ -16,6 +28,8 @@
   }
 
   window.themeConfig = theme;
+  window.PRESET_THEMES = PRESET_THEMES;
+  if (!theme.current) theme.current = 'default';
 
   function applyTheme() {
     const project = document.body.dataset.project || 'landing';

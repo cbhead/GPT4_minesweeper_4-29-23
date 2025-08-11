@@ -41,6 +41,32 @@ function init(projects) {
   const container = document.getElementById('projects');
   const controls = document.getElementById('settings-controls');
 
+  function addThemeSelector() {
+    const row = document.createElement('div');
+    row.className = 'settings-row';
+    const label = document.createElement('label');
+    label.textContent = 'Theme';
+    const select = document.createElement('select');
+    Object.keys(window.PRESET_THEMES).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+      if (themeConfig.current === name) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener('change', () => {
+      const preset = window.PRESET_THEMES[select.value];
+      themeConfig.landing = JSON.parse(JSON.stringify(preset.landing || {}));
+      themeConfig.projects = JSON.parse(JSON.stringify(preset.projects || {}));
+      themeConfig.current = select.value;
+      saveThemeConfig();
+      location.reload();
+    });
+    label.appendChild(select);
+    row.appendChild(label);
+    controls.appendChild(row);
+  }
+
   function addColorControl(labelText, value, onChange) {
     const row = document.createElement('div');
     row.className = 'settings-row';
@@ -51,6 +77,7 @@ function init(projects) {
     input.value = value;
     input.addEventListener('input', () => {
       onChange(input.value);
+      themeConfig.current = 'custom';
       saveThemeConfig();
     });
     label.appendChild(input);
@@ -67,6 +94,8 @@ function init(projects) {
   const order = stored.order || projects.map(p => p.title);
   const visibility = stored.visibility || {};
   const icons = stored.icons || {};
+
+  addThemeSelector();
 
   const landingTheme = themeConfig.landing || {};
   addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
@@ -177,6 +206,7 @@ function init(projects) {
         themeConfig.projects[project.title] = projectTheme;
         const tileEl = container.querySelector(`[data-title="${project.title}"]`);
         apply(tileEl, input.value);
+        themeConfig.current = 'custom';
         saveThemeConfig();
       });
       row.appendChild(input);
