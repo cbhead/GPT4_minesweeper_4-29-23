@@ -1,3 +1,19 @@
+const settingsBtn = document.getElementById('settings-btn');
+const settingsModal = document.getElementById('settings-modal');
+const settingsClose = document.getElementById('settings-close');
+
+settingsBtn.addEventListener('click', () => {
+  settingsModal.style.display = 'block';
+});
+
+settingsClose.addEventListener('click', () => {
+  settingsModal.style.display = 'none';
+});
+
+window.addEventListener('click', e => {
+  if (e.target === settingsModal) settingsModal.style.display = 'none';
+});
+
 fetch('projects.json')
   .then(response => response.json())
   .then(projects => {
@@ -25,7 +41,7 @@ fetch('projects.json')
       tile.draggable = true;
       tile.dataset.title = project.title;
       tile.innerHTML = `
-        <img src="${project.image}" alt="${project.title}">
+        <i class="${project.icon} project-icon"></i>
         <h2>${project.title}</h2>
         <p>${project.description}</p>
       `;

@@ -5,13 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Projects</title>
   <link rel="stylesheet" href="styles/landing.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-ryNyEJD7BqXc9E+u6KDAdAm8X1sC3yRyvE4s46HoPazTA/gkGEXUXMaLLq5yRvCNrI6VsgGAaHo9IoaAeTfLxw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
   <header>
-    <h1>My Projects</h1>
+    <h1><i class="fa-solid fa-diagram-project"></i> My Projects</h1>
+    <button id="settings-btn" aria-label="Settings"><i class="fa-solid fa-cog"></i></button>
   </header>
-  <section id="visibility-controls"></section>
   <main id="projects" class="projects-grid"></main>
+
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <span id="settings-close" class="close">&times;</span>
+      <h2>Settings</h2>
+      <div id="visibility-controls"></div>
+    </div>
+  </div>
+
   <script src="scripts/landing.js"></script>
 </body>
 </html>
