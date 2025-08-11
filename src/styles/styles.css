@@ -1,12 +1,22 @@
+:root {
+    --bg-color: #222;
+    --text-color: #fff;
+    --header-bg: #333;
+    --header-text: #fff;
+    --primary-color: #3c8dbc;
+    --secondary-color: #f6b26b;
+    --danger-color: #d9534f;
+}
+
 body {
-    background-color: #222;
-    color: #fff;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     font-family: Arial, sans-serif;
 }
 
 header {
-    background: #333;
-    color: #fff;
+    background: var(--header-bg);
+    color: var(--header-text);
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -14,7 +24,7 @@ header {
 }
 
 header nav a {
-    color: #fff;
+    color: var(--header-text);
     text-decoration: none;
 }
 
@@ -24,7 +34,7 @@ input, textarea, select {
 
 h1 {
     text-align: center;
-    color: #f6b26b;
+    color: var(--secondary-color);
 }
 
 main {
@@ -59,27 +69,27 @@ main {
 .cell {
     width: 40px;
     height: 40px;
-    border: 1px solid #3c8dbc;
+    border: 1px solid var(--primary-color);
     border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #3c8dbc;
-    color: #f6b26b;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
     cursor: pointer;
 }
 
 .cell[data-flagged="true"] {
-    background-color: #f6b26b;
-    color: #3c8dbc;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 .cell[data-revealed="true"] {
-    background-color: #333;
+    background-color: var(--header-bg);
 }
 
 .cell[data-mine="true"][data-revealed="true"] {
-    background-color: #d9534f;
+    background-color: var(--danger-color);
 }
 
 form {
@@ -112,14 +122,14 @@ form button {
 }
 
 #bookmark-list a {
-    color: #f6b26b;
+    color: var(--secondary-color);
     text-decoration: none;
 }
 
 #bookmark-list button {
     background: none;
     border: none;
-    color: #d9534f;
+    color: var(--danger-color);
     cursor: pointer;
 }
 
@@ -127,9 +137,9 @@ textarea {
     width: 80%;
     margin: 0.5rem auto;
     display: block;
-    background: #333;
-    color: #fff;
-    border: 1px solid #3c8dbc;
+    background: var(--header-bg);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
     padding: 0.5rem;
 }

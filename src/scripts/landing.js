@@ -41,6 +41,23 @@ function init(projects) {
   const container = document.getElementById('projects');
   const controls = document.getElementById('settings-controls');
 
+  function addColorControl(labelText, value, onChange) {
+    const row = document.createElement('div');
+    row.className = 'settings-row';
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = value;
+    input.addEventListener('input', () => {
+      onChange(input.value);
+      saveThemeConfig();
+    });
+    label.appendChild(input);
+    row.appendChild(label);
+    controls.appendChild(row);
+  }
+
   let stored = {};
   try {
     stored = JSON.parse(localStorage.getItem('projectLayout') || '{}');
@@ -50,6 +67,17 @@ function init(projects) {
   const order = stored.order || projects.map(p => p.title);
   const visibility = stored.visibility || {};
   const icons = stored.icons || {};
+
+  const landingTheme = themeConfig.landing || {};
+  addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
+    themeConfig.landing.background = v;
+  });
+  addColorControl('Header Background', landingTheme.header || '#333', v => {
+    themeConfig.landing.header = v;
+  });
+  addColorControl('Header Text', landingTheme.headerText || '#fff', v => {
+    themeConfig.landing.headerText = v;
+  });
 
   const projectMap = new Map(projects.map(p => [p.title, p]));
   const orderedProjects = [];
@@ -73,6 +101,12 @@ function init(projects) {
       <h2>${project.title}</h2>
       <p>${project.description}</p>
     `;
+    const theme = (themeConfig.projects && themeConfig.projects[project.title]) || {};
+    if (theme.background) tile.style.backgroundColor = theme.background;
+    if (theme.text) tile.style.color = theme.text;
+    const iconElInit = tile.querySelector('.project-icon');
+    if (theme.primary) iconElInit.style.color = theme.primary;
+    if (theme.secondary) tile.style.borderColor = theme.secondary;
     if (visibility[project.title] === false) {
       tile.style.display = 'none';
     }
@@ -131,6 +165,36 @@ function init(projects) {
       saveLayout();
     });
     row.appendChild(iconInput);
+
+    const projectTheme = themeConfig.projects[project.title] || {};
+    function themeColorInput(prop, defaultVal, apply) {
+      const input = document.createElement('input');
+      input.type = 'color';
+      input.value = projectTheme[prop] || defaultVal;
+      input.title = prop;
+      input.addEventListener('input', () => {
+        projectTheme[prop] = input.value;
+        themeConfig.projects[project.title] = projectTheme;
+        const tileEl = container.querySelector(`[data-title="${project.title}"]`);
+        apply(tileEl, input.value);
+        saveThemeConfig();
+      });
+      row.appendChild(input);
+    }
+
+    themeColorInput('background', '#ffffff', (tileEl, val) => {
+      tileEl.style.backgroundColor = val;
+    });
+    themeColorInput('text', '#000000', (tileEl, val) => {
+      tileEl.style.color = val;
+    });
+    themeColorInput('primary', '#3c8dbc', (tileEl, val) => {
+      const icon = tileEl.querySelector('.project-icon');
+      icon.style.color = val;
+    });
+    themeColorInput('secondary', '#f6b26b', (tileEl, val) => {
+      tileEl.style.borderColor = val;
+    });
 
     controls.appendChild(row);
   });
