@@ -10,19 +10,27 @@
 <body>
   <main>
     <h1>Tools</h1>
-    <h1>Text Tools</h1>
-    <textarea id="input-text" rows="8" cols="40" placeholder="Enter text..."></textarea>
-    <div>
-      <select id="transform">
-        <option value="upper">Uppercase</option>
-        <option value="lower">Lowercase</option>
-        <option value="reverse">Reverse</option>
-      </select>
-      <button id="run">Run</button>
-    </div>
-    <textarea id="output-text" rows="8" cols="40" readonly></textarea>
+    <section id="text-tools">
+      <h2>Text Tools</h2>
+      <textarea id="input-text" rows="8" cols="40" placeholder="Enter text..."></textarea>
+      <div>
+        <select id="transform">
+          <option value="upper">Uppercase</option>
+          <option value="lower">Lowercase</option>
+          <option value="reverse">Reverse</option>
+        </select>
+        <button id="run">Run</button>
+      </div>
+      <textarea id="output-text" rows="8" cols="40" readonly></textarea>
+    </section>
+    <section id="storage-tools">
+      <h2>Local Storage</h2>
+      <button id="download-storage">Download</button>
+      <input type="file" id="upload-storage" accept="application/json">
+    </section>
   </main>
   <script src="header.js"></script>
   <script src="../scripts/tools.js"></script>
 </body>
 </html>
+
