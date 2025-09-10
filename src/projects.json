@@ -2,19 +2,19 @@
   {
     "title": "Minesweeper",
     "description": "Classic Minesweeper game built with vanilla JS.",
-    "link": "projects/minesweeper.html",
+    "entry": "projects/minesweeper.html",
     "icon": "fa-solid fa-bomb"
   },
   {
     "title": "Bookmarks",
     "description": "Collection of useful bookmarks.",
-    "link": "projects/bookmarks.html",
+    "entry": "projects/bookmarks.html",
     "icon": "fa-solid fa-bookmark"
   },
   {
     "title": "Tools",
     "description": "Handy tools for everyday tasks.",
-    "link": "projects/tools.html",
+    "entry": "projects/tools.html",
     "icon": "fa-solid fa-wrench"
   }
 ]

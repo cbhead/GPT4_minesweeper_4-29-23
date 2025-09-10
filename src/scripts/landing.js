@@ -36,19 +36,19 @@ const FALLBACK_PROJECTS = [
   {
     title: 'Minesweeper',
     description: 'Classic Minesweeper game built with vanilla JS.',
-    link: 'projects/minesweeper.html',
+    entry: 'projects/minesweeper.html',
     icon: 'fa-solid fa-bomb'
   },
   {
     title: 'Bookmarks',
     description: 'Collection of useful bookmarks.',
-    link: 'projects/bookmarks.html',
+    entry: 'projects/bookmarks.html',
     icon: 'fa-solid fa-bookmark'
   },
   {
     title: 'Tools',
     description: 'Handy tools for everyday tasks.',
-    link: 'projects/tools.html',
+    entry: 'projects/tools.html',
     icon: 'fa-solid fa-wrench'
   }
 ];
@@ -311,7 +311,7 @@ function init(projects) {
   orderedProjects.forEach(project => {
     const tile = document.createElement('a');
     tile.className = 'project-tile';
-    tile.href = project.link;
+    tile.href = project.entry;
     tile.draggable = true;
     tile.dataset.title = project.title;
     const iconClass = icons[project.title] || project.icon;
@@ -432,13 +432,21 @@ function init(projects) {
   }
 }
 
-fetch('projects.json')
-  .then(response => {
+/**
+ * Load module metadata from the manifest and initialise the landing page.
+ * This allows new modules to be added by simply updating projects.json
+ * without manually wiring them into the page.
+ */
+async function loadModules() {
+  try {
+    const response = await fetch('projects.json');
     if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
-  })
-  .then(init)
-  .catch(err => {
+    const modules = await response.json();
+    init(modules);
+  } catch (err) {
     console.error('Error loading projects:', err);
     init(FALLBACK_PROJECTS);
-  });
+  }
+}
+
+loadModules();
