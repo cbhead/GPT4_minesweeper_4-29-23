@@ -1,4 +1,5 @@
-# GPT4 Minesweeper
+# PortfolAI
+OG: GPT4 Minesweep 
 
 This project now hosts a growing set of client-side tools. Originally a Minesweeper game, it now includes a bookmark manager and a collection of simple text transformation utilities. All data is stored locally in the browser.
 
