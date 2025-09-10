@@ -1,6 +1,35 @@
 const settingsBtn = document.getElementById('settings-btn');
 const settingsModal = document.getElementById('settings-modal');
 const settingsClose = document.getElementById('settings-close');
+const profileSection = document.getElementById('profile-section');
+const profilePic = document.getElementById('profile-picture');
+const profileNameEl = document.getElementById('profile-name');
+const profileDetailsEl = document.getElementById('profile-details');
+
+let profile = {};
+try {
+  profile = JSON.parse(localStorage.getItem('profile') || '{}');
+} catch (e) {
+  console.warn('Could not access localStorage:', e);
+}
+
+if (profile.picture) profilePic.src = profile.picture;
+if (profile.name) profileNameEl.textContent = profile.name;
+if (profile.details) profileDetailsEl.textContent = profile.details;
+
+function updateProfileSection() {
+  profileSection.style.display = (profile.name || profile.details || profile.picture) ? 'flex' : 'none';
+  profilePic.style.display = profile.picture ? '' : 'none';
+}
+updateProfileSection();
+
+function saveProfile() {
+  try {
+    localStorage.setItem('profile', JSON.stringify(profile));
+  } catch (e) {
+    console.warn('Could not save profile to localStorage:', e);
+  }
+}
 
 // Fallback project list used if projects.json fails to load
 const FALLBACK_PROJECTS = [
@@ -67,6 +96,65 @@ function init(projects) {
     controls.appendChild(row);
   }
 
+  function addProfileControls() {
+    const nameRow = document.createElement('div');
+    nameRow.className = 'settings-row';
+    const nameLabel = document.createElement('label');
+    nameLabel.textContent = 'Name';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = profile.name || '';
+    nameInput.addEventListener('input', () => {
+      profile.name = nameInput.value;
+      profileNameEl.textContent = profile.name;
+      saveProfile();
+      updateProfileSection();
+    });
+    nameLabel.appendChild(nameInput);
+    nameRow.appendChild(nameLabel);
+    controls.appendChild(nameRow);
+
+    const detailsRow = document.createElement('div');
+    detailsRow.className = 'settings-row';
+    const detailsLabel = document.createElement('label');
+    detailsLabel.textContent = 'Details';
+    const detailsInput = document.createElement('textarea');
+    detailsInput.value = profile.details || '';
+    detailsInput.addEventListener('input', () => {
+      profile.details = detailsInput.value;
+      profileDetailsEl.textContent = profile.details;
+      saveProfile();
+      updateProfileSection();
+    });
+    detailsLabel.appendChild(detailsInput);
+    detailsRow.appendChild(detailsLabel);
+    controls.appendChild(detailsRow);
+
+    const picRow = document.createElement('div');
+    picRow.className = 'settings-row';
+    const picLabel = document.createElement('label');
+    picLabel.textContent = 'Picture';
+    const picInput = document.createElement('input');
+    picInput.type = 'file';
+    picInput.accept = 'image/*';
+    picInput.addEventListener('change', () => {
+      const file = picInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          profile.picture = e.target.result;
+          profilePic.src = profile.picture;
+          saveProfile();
+          updateProfileSection();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    picLabel.appendChild(picInput);
+    picRow.appendChild(picLabel);
+    controls.appendChild(picRow);
+  }
+
   function addColorControl(labelText, value, onChange) {
     const row = document.createElement('div');
     row.className = 'settings-row';
@@ -96,6 +184,7 @@ function init(projects) {
   const icons = stored.icons || {};
 
   addThemeSelector();
+  addProfileControls();
 
   const landingTheme = themeConfig.landing || {};
   addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
