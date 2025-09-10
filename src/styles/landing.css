@@ -21,6 +21,19 @@ header {
   align-items: center;
 }
 
+#project-filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+#project-filters input[type="text"],
+#project-filters select {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
 #settings-btn {
   background: none;
   border: none;

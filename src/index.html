@@ -12,6 +12,12 @@
     <h1><i class="fa-solid fa-diagram-project"></i> My Projects</h1>
     <button id="settings-btn" aria-label="Settings"><i class="fa-solid fa-cog"></i></button>
   </header>
+  <div id="project-filters">
+    <input type="text" id="search-input" placeholder="Search projects..." />
+    <select id="category-filter">
+      <option value="">All Categories</option>
+    </select>
+  </div>
   <main id="projects" class="projects-grid"></main>
 
   <div id="settings-modal" class="modal">
