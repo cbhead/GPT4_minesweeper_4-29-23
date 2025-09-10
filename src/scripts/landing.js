@@ -41,6 +41,45 @@ function init(projects) {
   const container = document.getElementById('projects');
   const controls = document.getElementById('settings-controls');
 
+  let themeSelect;
+  const landingInputs = {};
+  const projectInputs = {};
+
+  function updateThemeUI() {
+    const lt = themeConfig.landing || {};
+    if (landingInputs.background) landingInputs.background.value = lt.background || '#f4f4f4';
+    if (landingInputs.header) landingInputs.header.value = lt.header || '#333';
+    if (landingInputs.headerText) landingInputs.headerText.value = lt.headerText || '#fff';
+
+    Object.keys(projectInputs).forEach(title => {
+      const inputs = projectInputs[title];
+      const t = (themeConfig.projects && themeConfig.projects[title]) || {};
+      if (inputs.background) inputs.background.value = t.background || '#ffffff';
+      if (inputs.text) inputs.text.value = t.text || '#000000';
+      if (inputs.primary) inputs.primary.value = t.primary || '#3c8dbc';
+      if (inputs.secondary) inputs.secondary.value = t.secondary || '#f6b26b';
+      const tile = container.querySelector(`[data-title="${title}"]`);
+      if (tile) {
+        tile.style.backgroundColor = t.background || '';
+        tile.style.color = t.text || '';
+        const icon = tile.querySelector('.project-icon');
+        if (icon) icon.style.color = t.primary || '';
+        tile.style.borderColor = t.secondary || '';
+      }
+    });
+  }
+
+  function applyPreset(name) {
+    const preset = window.PRESET_THEMES[name];
+    if (!preset) return;
+    themeConfig.landing = JSON.parse(JSON.stringify(preset.landing || {}));
+    themeConfig.projects = JSON.parse(JSON.stringify(preset.projects || {}));
+    themeConfig.current = name;
+    saveThemeConfig();
+    updateThemeUI();
+    if (themeSelect) themeSelect.value = name;
+  }
+
   function addThemeSelector() {
     const row = document.createElement('div');
     row.className = 'settings-row';
@@ -55,13 +94,9 @@ function init(projects) {
       select.appendChild(opt);
     });
     select.addEventListener('change', () => {
-      const preset = window.PRESET_THEMES[select.value];
-      themeConfig.landing = JSON.parse(JSON.stringify(preset.landing || {}));
-      themeConfig.projects = JSON.parse(JSON.stringify(preset.projects || {}));
-      themeConfig.current = select.value;
-      saveThemeConfig();
-      location.reload();
+      applyPreset(select.value);
     });
+    themeSelect = select;
     label.appendChild(select);
     row.appendChild(label);
     controls.appendChild(row);
@@ -83,6 +118,70 @@ function init(projects) {
     label.appendChild(input);
     row.appendChild(label);
     controls.appendChild(row);
+    return input;
+  }
+
+  function addThemeActions() {
+    const row = document.createElement('div');
+    row.className = 'settings-row';
+
+    const resetBtn = document.createElement('button');
+    resetBtn.textContent = 'Reset to default';
+    resetBtn.addEventListener('click', () => applyPreset('default'));
+    row.appendChild(resetBtn);
+
+    const exportBtn = document.createElement('button');
+    exportBtn.textContent = 'Export Theme';
+    exportBtn.addEventListener('click', () => {
+      const dataStr = JSON.stringify(themeConfig, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'themeConfig.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    row.appendChild(exportBtn);
+
+    const importInput = document.createElement('input');
+    importInput.type = 'file';
+    importInput.accept = 'application/json';
+    importInput.style.display = 'none';
+    importInput.addEventListener('change', () => {
+      const file = importInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          themeConfig.landing = data.landing || {};
+          themeConfig.projects = data.projects || {};
+          themeConfig.current = data.current || 'custom';
+          saveThemeConfig();
+          updateThemeUI();
+          if (window.PRESET_THEMES[themeConfig.current]) {
+            themeSelect.value = themeConfig.current;
+          } else {
+            themeSelect.value = 'default';
+          }
+        } catch (e) {
+          alert('Invalid theme file');
+        }
+      };
+      reader.readAsText(file);
+      importInput.value = '';
+    });
+
+    const importBtn = document.createElement('button');
+    importBtn.textContent = 'Import Theme';
+    importBtn.addEventListener('click', () => importInput.click());
+    row.appendChild(importBtn);
+    row.appendChild(importInput);
+
+    controls.appendChild(row);
   }
 
   let stored = {};
@@ -98,15 +197,17 @@ function init(projects) {
   addThemeSelector();
 
   const landingTheme = themeConfig.landing || {};
-  addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
+  landingInputs.background = addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
     themeConfig.landing.background = v;
   });
-  addColorControl('Header Background', landingTheme.header || '#333', v => {
+  landingInputs.header = addColorControl('Header Background', landingTheme.header || '#333', v => {
     themeConfig.landing.header = v;
   });
-  addColorControl('Header Text', landingTheme.headerText || '#fff', v => {
+  landingInputs.headerText = addColorControl('Header Text', landingTheme.headerText || '#fff', v => {
     themeConfig.landing.headerText = v;
   });
+
+  addThemeActions();
 
   const projectMap = new Map(projects.map(p => [p.title, p]));
   const orderedProjects = [];
@@ -196,6 +297,7 @@ function init(projects) {
     row.appendChild(iconInput);
 
     const projectTheme = themeConfig.projects[project.title] || {};
+    const inputs = {};
     function themeColorInput(prop, defaultVal, apply) {
       const input = document.createElement('input');
       input.type = 'color';
@@ -210,22 +312,24 @@ function init(projects) {
         saveThemeConfig();
       });
       row.appendChild(input);
+      return input;
     }
 
-    themeColorInput('background', '#ffffff', (tileEl, val) => {
+    inputs.background = themeColorInput('background', '#ffffff', (tileEl, val) => {
       tileEl.style.backgroundColor = val;
     });
-    themeColorInput('text', '#000000', (tileEl, val) => {
+    inputs.text = themeColorInput('text', '#000000', (tileEl, val) => {
       tileEl.style.color = val;
     });
-    themeColorInput('primary', '#3c8dbc', (tileEl, val) => {
+    inputs.primary = themeColorInput('primary', '#3c8dbc', (tileEl, val) => {
       const icon = tileEl.querySelector('.project-icon');
       icon.style.color = val;
     });
-    themeColorInput('secondary', '#f6b26b', (tileEl, val) => {
+    inputs.secondary = themeColorInput('secondary', '#f6b26b', (tileEl, val) => {
       tileEl.style.borderColor = val;
     });
 
+    projectInputs[project.title] = inputs;
     controls.appendChild(row);
   });
 
