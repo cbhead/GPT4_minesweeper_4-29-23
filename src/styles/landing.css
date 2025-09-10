@@ -21,6 +21,33 @@ header {
   align-items: center;
 }
 
+#profile-section {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+#profile-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#profile-info {
+  text-align: left;
+}
+
+#profile-info h2 {
+  margin: 0;
+}
+
+#profile-info p {
+  margin: 0.25rem 0 0;
+}
+
 #settings-btn {
   background: none;
   border: none;
