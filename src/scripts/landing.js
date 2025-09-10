@@ -8,19 +8,22 @@ const FALLBACK_PROJECTS = [
     title: 'Minesweeper',
     description: 'Classic Minesweeper game built with vanilla JS.',
     link: 'projects/minesweeper.html',
-    icon: 'fa-solid fa-bomb'
+    icon: 'fa-solid fa-bomb',
+    category: 'Games'
   },
   {
     title: 'Bookmarks',
     description: 'Collection of useful bookmarks.',
     link: 'projects/bookmarks.html',
-    icon: 'fa-solid fa-bookmark'
+    icon: 'fa-solid fa-bookmark',
+    category: 'Reference'
   },
   {
     title: 'Tools',
     description: 'Handy tools for everyday tasks.',
     link: 'projects/tools.html',
-    icon: 'fa-solid fa-wrench'
+    icon: 'fa-solid fa-wrench',
+    category: 'Utilities'
   }
 ];
 
@@ -40,6 +43,8 @@ window.addEventListener('click', e => {
 function init(projects) {
   const container = document.getElementById('projects');
   const controls = document.getElementById('settings-controls');
+  const searchInput = document.getElementById('search-input');
+  const categoryFilter = document.getElementById('category-filter');
 
   function addThemeSelector() {
     const row = document.createElement('div');
@@ -95,6 +100,36 @@ function init(projects) {
   const visibility = stored.visibility || {};
   const icons = stored.icons || {};
 
+  const categories = [...new Set(projects.map(p => p.category).filter(Boolean))];
+  if (categories.length > 1) {
+    categoryFilter.innerHTML = '<option value="">All Categories</option>';
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      categoryFilter.appendChild(opt);
+    });
+  } else {
+    categoryFilter.style.display = 'none';
+  }
+
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase();
+    const selected = categoryFilter.value;
+    container.querySelectorAll('.project-tile').forEach(tile => {
+      const title = tile.dataset.title.toLowerCase();
+      const desc = (tile.dataset.description || '').toLowerCase();
+      const cat = tile.dataset.category || '';
+      const matchesQuery = !query || title.includes(query) || desc.includes(query);
+      const matchesCat = !selected || cat === selected;
+      const visible = visibility[tile.dataset.title] !== false;
+      tile.style.display = matchesQuery && matchesCat && visible ? '' : 'none';
+    });
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+  categoryFilter.addEventListener('change', applyFilters);
+
   addThemeSelector();
 
   const landingTheme = themeConfig.landing || {};
@@ -124,6 +159,8 @@ function init(projects) {
     tile.href = project.link;
     tile.draggable = true;
     tile.dataset.title = project.title;
+    tile.dataset.description = project.description;
+    if (project.category) tile.dataset.category = project.category;
     const iconClass = icons[project.title] || project.icon;
     tile.innerHTML = `
       <i class="${iconClass} project-icon"></i>
@@ -136,9 +173,6 @@ function init(projects) {
     const iconElInit = tile.querySelector('.project-icon');
     if (theme.primary) iconElInit.style.color = theme.primary;
     if (theme.secondary) tile.style.borderColor = theme.secondary;
-    if (visibility[project.title] === false) {
-      tile.style.display = 'none';
-    }
     container.appendChild(tile);
 
     tile.addEventListener('dragstart', () => {
@@ -175,9 +209,8 @@ function init(projects) {
     checkbox.type = 'checkbox';
     checkbox.checked = visibility[project.title] !== false;
     checkbox.addEventListener('change', () => {
-      const tile = container.querySelector(`[data-title="${project.title}"]`);
-      tile.style.display = checkbox.checked ? '' : 'none';
       visibility[project.title] = checkbox.checked;
+      applyFilters();
       saveLayout();
     });
     label.appendChild(checkbox);
@@ -228,6 +261,8 @@ function init(projects) {
 
     controls.appendChild(row);
   });
+
+  applyFilters();
 
   function saveLayout() {
     const newOrder = [...container.querySelectorAll('.project-tile')].map(tile => tile.dataset.title);
