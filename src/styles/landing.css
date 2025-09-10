@@ -19,14 +19,55 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-#settings-btn {
+header .branding {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+header .branding i {
+  margin-right: 0.5rem;
+}
+
+header nav {
+  display: flex;
+  gap: 1rem;
+}
+
+header nav a {
+  color: var(--landing-header-text);
+  text-decoration: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.header-controls button {
   background: none;
   border: none;
   color: var(--landing-header-text);
   font-size: 1.5rem;
   cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  header nav {
+    margin-top: 0.5rem;
+    flex-direction: column;
+    width: 100%;
+  }
+  .header-controls {
+    align-self: flex-end;
+  }
 }
 
 input, textarea, select {
