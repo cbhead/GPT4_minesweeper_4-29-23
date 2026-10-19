@@ -48,6 +48,45 @@ header nav a {
 }
 
 .header-controls button {
+#project-filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+#project-filters input[type="text"],
+#project-filters select {
+  padding: 0.5rem;
+  font-size: 1rem;
+#profile-section {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+#profile-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#profile-info {
+  text-align: left;
+}
+
+#profile-info h2 {
+  margin: 0;
+}
+
+#profile-info p {
+  margin: 0.25rem 0 0;
+}
+
+#settings-btn {
   background: none;
   border: none;
   color: var(--landing-header-text);

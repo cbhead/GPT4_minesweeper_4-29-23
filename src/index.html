@@ -8,17 +8,35 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body data-project="landing">
+  <header>
+    <h1><i class="fa-solid fa-diagram-project"></i> My Projects</h1>
+    <button id="settings-btn" aria-label="Settings"><i class="fa-solid fa-cog"></i></button>
+  </header>
+  <section id="profile-section">
+    <img id="profile-picture" alt="Profile picture" />
+    <div id="profile-info">
+      <h2 id="profile-name"></h2>
+      <p id="profile-details"></p>
+    </div>
+  </section>
   <main id="projects" class="projects-grid"></main>
 
   <div id="settings-modal" class="modal">
     <div class="modal-content">
       <span id="settings-close" class="close">&times;</span>
       <h2>Settings</h2>
-      <div id="settings-controls"></div>
+      <div id="settings-controls">
+        <div class="settings-row">
+          <button id="export-settings">Export Settings</button>
+          <button id="import-settings">Import Settings</button>
+          <input type="file" id="import-settings-file" accept="application/json" style="display:none" />
+        </div>
+      </div>
     </div>
   </div>
   <script src="scripts/theme.js"></script>
   <script src="projects/header.js"></script>
+  <script src="scripts/storage.js"></script>
   <script src="scripts/landing.js"></script>
 </body>
 </html>

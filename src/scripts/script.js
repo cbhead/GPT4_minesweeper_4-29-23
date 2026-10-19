@@ -3,29 +3,46 @@ let mineCount;
 let gameBoard;
 let consecutiveWins = 0;
 let gameInProgress = false; // Add this line
+let minesLeft;
+let timerElement;
+let minesLeftElement;
+let timerInterval;
+let elapsedTime = 0;
+
+const difficulties = {
+    easy: { size: 8, mines: 10 },
+    medium: { size: 16, mines: 40 },
+    hard: { size: 24, mines: 99 }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     gameBoard = document.querySelector('#game-board');
+    timerElement = document.getElementById('timer');
+    minesLeftElement = document.getElementById('mines-left');
     const startGameButton = document.getElementById('start-game');
-    startGameButton.addEventListener('click', () => {
-        initializeGame();
-    });
+    const restartGameButton = document.getElementById('restart-game');
+    startGameButton.addEventListener('click', initializeGame);
+    restartGameButton.addEventListener('click', initializeGame);
     addEventListeners();
     initializeGame();
 });
 
 function initializeGame() {
     gameInProgress = true; // Set gameInProgress to true when the game starts
-    const boardSizeInput = document.getElementById('board-size');
-    const mineCountInput = document.getElementById('mine-count');
-    boardSize = Math.min(50, parseInt(boardSizeInput.value));
-    mineCount = Math.min(boardSize * boardSize - 1, parseInt(mineCountInput.value));
+    const difficulty = document.getElementById('difficulty').value;
+    const settings = difficulties[difficulty];
+    boardSize = settings.size;
+    mineCount = settings.mines;
     gameBoard.innerHTML = '';
 
     gameBoard.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
 
     generateCells();
     placeMines();
+
+    minesLeft = mineCount;
+    updateMinesLeft();
+    resetTimer();
 }
 
 function generateCells() {
@@ -50,6 +67,26 @@ function placeMines() {
             cell.dataset.mine = true;
             minesPlaced++;
         }
+    }
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    elapsedTime = 0;
+    if (timerElement) {
+        timerElement.textContent = elapsedTime;
+    }
+    timerInterval = setInterval(() => {
+        elapsedTime++;
+        if (timerElement) {
+            timerElement.textContent = elapsedTime;
+        }
+    }, 1000);
+}
+
+function updateMinesLeft() {
+    if (minesLeftElement) {
+        minesLeftElement.textContent = minesLeft;
     }
 }
 
@@ -120,9 +157,18 @@ function getAdjacentCells(cell) {
 
 function toggleFlag(cell) {
     if (cell.dataset.revealed === 'true') return;
-    cell.dataset.flagged = cell.dataset.flagged === 'true' ? 'false' : 'true';
-    cell.style.backgroundColor = cell.dataset.flagged === 'true' ? '#f6b26b' : '#3c8dbc';
-    cell.textContent = cell.dataset.flagged === 'true' ? '🚩' : '';
+    if (cell.dataset.flagged === 'true') {
+        cell.dataset.flagged = 'false';
+        cell.style.backgroundColor = '#3c8dbc';
+        cell.textContent = '';
+        minesLeft++;
+    } else {
+        cell.dataset.flagged = 'true';
+        cell.style.backgroundColor = '#f6b26b';
+        cell.textContent = '🚩';
+        minesLeft--;
+    }
+    updateMinesLeft();
 }
 
 function checkVictory() {
@@ -135,6 +181,7 @@ function checkVictory() {
 
 function gameOver(mineCell) {
     gameInProgress = false;
+    clearInterval(timerInterval);
     mineCell.style.backgroundColor = '#d9534f';
     mineCell.textContent = '💣';
 
@@ -157,6 +204,7 @@ function victory() {
     if (!gameInProgress) return; // Add this line to prevent multiple wins for a single victory
 
     gameInProgress = false; // Set gameInProgress to false when the player wins
+    clearInterval(timerInterval);
     consecutiveWins++;
     updateConsecutiveWins();
     setTimeout(() => {
