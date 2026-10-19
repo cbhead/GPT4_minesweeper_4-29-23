@@ -5,6 +5,9 @@ const profileSection = document.getElementById('profile-section');
 const profilePic = document.getElementById('profile-picture');
 const profileNameEl = document.getElementById('profile-name');
 const profileDetailsEl = document.getElementById('profile-details');
+const exportSettingsBtn = document.getElementById('export-settings');
+const importSettingsBtn = document.getElementById('import-settings');
+const importSettingsFile = document.getElementById('import-settings-file');
 
 let profile = {};
 try {
@@ -64,6 +67,25 @@ settingsClose.addEventListener('click', () => {
 window.addEventListener('click', e => {
   if (e.target === settingsModal) settingsModal.style.display = 'none';
 });
+
+if (exportSettingsBtn) {
+  exportSettingsBtn.addEventListener('click', () => {
+    if (typeof window.exportSettings === 'function') {
+      window.exportSettings();
+    }
+  });
+}
+
+if (importSettingsBtn && importSettingsFile) {
+  importSettingsBtn.addEventListener('click', () => importSettingsFile.click());
+  importSettingsFile.addEventListener('change', () => {
+    const file = importSettingsFile.files[0];
+    if (file && typeof window.importSettings === 'function') {
+      window.importSettings(file);
+    }
+    importSettingsFile.value = '';
+  });
+}
 
 // Initialize the page with project data
 function init(projects) {
