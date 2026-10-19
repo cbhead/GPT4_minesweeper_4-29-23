@@ -1,6 +1,38 @@
 const settingsBtn = document.getElementById('settings-btn');
 const settingsModal = document.getElementById('settings-modal');
 const settingsClose = document.getElementById('settings-close');
+const profileSection = document.getElementById('profile-section');
+const profilePic = document.getElementById('profile-picture');
+const profileNameEl = document.getElementById('profile-name');
+const profileDetailsEl = document.getElementById('profile-details');
+const exportSettingsBtn = document.getElementById('export-settings');
+const importSettingsBtn = document.getElementById('import-settings');
+const importSettingsFile = document.getElementById('import-settings-file');
+
+let profile = {};
+try {
+  profile = JSON.parse(localStorage.getItem('profile') || '{}');
+} catch (e) {
+  console.warn('Could not access localStorage:', e);
+}
+
+if (profile.picture) profilePic.src = profile.picture;
+if (profile.name) profileNameEl.textContent = profile.name;
+if (profile.details) profileDetailsEl.textContent = profile.details;
+
+function updateProfileSection() {
+  profileSection.style.display = (profile.name || profile.details || profile.picture) ? 'flex' : 'none';
+  profilePic.style.display = profile.picture ? '' : 'none';
+}
+updateProfileSection();
+
+function saveProfile() {
+  try {
+    localStorage.setItem('profile', JSON.stringify(profile));
+  } catch (e) {
+    console.warn('Could not save profile to localStorage:', e);
+  }
+}
 
 // Fallback project list used if projects.json fails to load
 const FALLBACK_PROJECTS = [
@@ -39,12 +71,70 @@ window.addEventListener('click', e => {
   if (e.target === settingsModal) settingsModal.style.display = 'none';
 });
 
+if (exportSettingsBtn) {
+  exportSettingsBtn.addEventListener('click', () => {
+    if (typeof window.exportSettings === 'function') {
+      window.exportSettings();
+    }
+  });
+}
+
+if (importSettingsBtn && importSettingsFile) {
+  importSettingsBtn.addEventListener('click', () => importSettingsFile.click());
+  importSettingsFile.addEventListener('change', () => {
+    const file = importSettingsFile.files[0];
+    if (file && typeof window.importSettings === 'function') {
+      window.importSettings(file);
+    }
+    importSettingsFile.value = '';
+  });
+}
+
 // Initialize the page with project data
 function init(projects) {
   const container = document.getElementById('projects');
   const controls = document.getElementById('settings-controls');
   const searchInput = document.getElementById('search-input');
   const categoryFilter = document.getElementById('category-filter');
+
+  let themeSelect;
+  const landingInputs = {};
+  const projectInputs = {};
+
+  function updateThemeUI() {
+    const lt = themeConfig.landing || {};
+    if (landingInputs.background) landingInputs.background.value = lt.background || '#f4f4f4';
+    if (landingInputs.header) landingInputs.header.value = lt.header || '#333';
+    if (landingInputs.headerText) landingInputs.headerText.value = lt.headerText || '#fff';
+
+    Object.keys(projectInputs).forEach(title => {
+      const inputs = projectInputs[title];
+      const t = (themeConfig.projects && themeConfig.projects[title]) || {};
+      if (inputs.background) inputs.background.value = t.background || '#ffffff';
+      if (inputs.text) inputs.text.value = t.text || '#000000';
+      if (inputs.primary) inputs.primary.value = t.primary || '#3c8dbc';
+      if (inputs.secondary) inputs.secondary.value = t.secondary || '#f6b26b';
+      const tile = container.querySelector(`[data-title="${title}"]`);
+      if (tile) {
+        tile.style.backgroundColor = t.background || '';
+        tile.style.color = t.text || '';
+        const icon = tile.querySelector('.project-icon');
+        if (icon) icon.style.color = t.primary || '';
+        tile.style.borderColor = t.secondary || '';
+      }
+    });
+  }
+
+  function applyPreset(name) {
+    const preset = window.PRESET_THEMES[name];
+    if (!preset) return;
+    themeConfig.landing = JSON.parse(JSON.stringify(preset.landing || {}));
+    themeConfig.projects = JSON.parse(JSON.stringify(preset.projects || {}));
+    themeConfig.current = name;
+    saveThemeConfig();
+    updateThemeUI();
+    if (themeSelect) themeSelect.value = name;
+  }
 
   function addThemeSelector() {
     const row = document.createElement('div');
@@ -60,16 +150,71 @@ function init(projects) {
       select.appendChild(opt);
     });
     select.addEventListener('change', () => {
-      const preset = window.PRESET_THEMES[select.value];
-      themeConfig.landing = JSON.parse(JSON.stringify(preset.landing || {}));
-      themeConfig.projects = JSON.parse(JSON.stringify(preset.projects || {}));
-      themeConfig.current = select.value;
-      saveThemeConfig();
-      location.reload();
+      applyPreset(select.value);
     });
+    themeSelect = select;
     label.appendChild(select);
     row.appendChild(label);
     controls.appendChild(row);
+  }
+
+  function addProfileControls() {
+    const nameRow = document.createElement('div');
+    nameRow.className = 'settings-row';
+    const nameLabel = document.createElement('label');
+    nameLabel.textContent = 'Name';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = profile.name || '';
+    nameInput.addEventListener('input', () => {
+      profile.name = nameInput.value;
+      profileNameEl.textContent = profile.name;
+      saveProfile();
+      updateProfileSection();
+    });
+    nameLabel.appendChild(nameInput);
+    nameRow.appendChild(nameLabel);
+    controls.appendChild(nameRow);
+
+    const detailsRow = document.createElement('div');
+    detailsRow.className = 'settings-row';
+    const detailsLabel = document.createElement('label');
+    detailsLabel.textContent = 'Details';
+    const detailsInput = document.createElement('textarea');
+    detailsInput.value = profile.details || '';
+    detailsInput.addEventListener('input', () => {
+      profile.details = detailsInput.value;
+      profileDetailsEl.textContent = profile.details;
+      saveProfile();
+      updateProfileSection();
+    });
+    detailsLabel.appendChild(detailsInput);
+    detailsRow.appendChild(detailsLabel);
+    controls.appendChild(detailsRow);
+
+    const picRow = document.createElement('div');
+    picRow.className = 'settings-row';
+    const picLabel = document.createElement('label');
+    picLabel.textContent = 'Picture';
+    const picInput = document.createElement('input');
+    picInput.type = 'file';
+    picInput.accept = 'image/*';
+    picInput.addEventListener('change', () => {
+      const file = picInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          profile.picture = e.target.result;
+          profilePic.src = profile.picture;
+          saveProfile();
+          updateProfileSection();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    picLabel.appendChild(picInput);
+    picRow.appendChild(picLabel);
+    controls.appendChild(picRow);
   }
 
   function addColorControl(labelText, value, onChange) {
@@ -87,6 +232,70 @@ function init(projects) {
     });
     label.appendChild(input);
     row.appendChild(label);
+    controls.appendChild(row);
+    return input;
+  }
+
+  function addThemeActions() {
+    const row = document.createElement('div');
+    row.className = 'settings-row';
+
+    const resetBtn = document.createElement('button');
+    resetBtn.textContent = 'Reset to default';
+    resetBtn.addEventListener('click', () => applyPreset('default'));
+    row.appendChild(resetBtn);
+
+    const exportBtn = document.createElement('button');
+    exportBtn.textContent = 'Export Theme';
+    exportBtn.addEventListener('click', () => {
+      const dataStr = JSON.stringify(themeConfig, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'themeConfig.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    row.appendChild(exportBtn);
+
+    const importInput = document.createElement('input');
+    importInput.type = 'file';
+    importInput.accept = 'application/json';
+    importInput.style.display = 'none';
+    importInput.addEventListener('change', () => {
+      const file = importInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          themeConfig.landing = data.landing || {};
+          themeConfig.projects = data.projects || {};
+          themeConfig.current = data.current || 'custom';
+          saveThemeConfig();
+          updateThemeUI();
+          if (window.PRESET_THEMES[themeConfig.current]) {
+            themeSelect.value = themeConfig.current;
+          } else {
+            themeSelect.value = 'default';
+          }
+        } catch (e) {
+          alert('Invalid theme file');
+        }
+      };
+      reader.readAsText(file);
+      importInput.value = '';
+    });
+
+    const importBtn = document.createElement('button');
+    importBtn.textContent = 'Import Theme';
+    importBtn.addEventListener('click', () => importInput.click());
+    row.appendChild(importBtn);
+    row.appendChild(importInput);
+
     controls.appendChild(row);
   }
 
@@ -131,17 +340,20 @@ function init(projects) {
   categoryFilter.addEventListener('change', applyFilters);
 
   addThemeSelector();
+  addProfileControls();
 
   const landingTheme = themeConfig.landing || {};
-  addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
+  landingInputs.background = addColorControl('Landing Background', landingTheme.background || '#f4f4f4', v => {
     themeConfig.landing.background = v;
   });
-  addColorControl('Header Background', landingTheme.header || '#333', v => {
+  landingInputs.header = addColorControl('Header Background', landingTheme.header || '#333', v => {
     themeConfig.landing.header = v;
   });
-  addColorControl('Header Text', landingTheme.headerText || '#fff', v => {
+  landingInputs.headerText = addColorControl('Header Text', landingTheme.headerText || '#fff', v => {
     themeConfig.landing.headerText = v;
   });
+
+  addThemeActions();
 
   const projectMap = new Map(projects.map(p => [p.title, p]));
   const orderedProjects = [];
@@ -156,7 +368,7 @@ function init(projects) {
   orderedProjects.forEach(project => {
     const tile = document.createElement('a');
     tile.className = 'project-tile';
-    tile.href = project.link;
+    tile.href = project.entry;
     tile.draggable = true;
     tile.dataset.title = project.title;
     tile.dataset.description = project.description;
@@ -229,6 +441,7 @@ function init(projects) {
     row.appendChild(iconInput);
 
     const projectTheme = themeConfig.projects[project.title] || {};
+    const inputs = {};
     function themeColorInput(prop, defaultVal, apply) {
       const input = document.createElement('input');
       input.type = 'color';
@@ -243,22 +456,24 @@ function init(projects) {
         saveThemeConfig();
       });
       row.appendChild(input);
+      return input;
     }
 
-    themeColorInput('background', '#ffffff', (tileEl, val) => {
+    inputs.background = themeColorInput('background', '#ffffff', (tileEl, val) => {
       tileEl.style.backgroundColor = val;
     });
-    themeColorInput('text', '#000000', (tileEl, val) => {
+    inputs.text = themeColorInput('text', '#000000', (tileEl, val) => {
       tileEl.style.color = val;
     });
-    themeColorInput('primary', '#3c8dbc', (tileEl, val) => {
+    inputs.primary = themeColorInput('primary', '#3c8dbc', (tileEl, val) => {
       const icon = tileEl.querySelector('.project-icon');
       icon.style.color = val;
     });
-    themeColorInput('secondary', '#f6b26b', (tileEl, val) => {
+    inputs.secondary = themeColorInput('secondary', '#f6b26b', (tileEl, val) => {
       tileEl.style.borderColor = val;
     });
 
+    projectInputs[project.title] = inputs;
     controls.appendChild(row);
   });
 
@@ -274,13 +489,21 @@ function init(projects) {
   }
 }
 
-fetch('projects.json')
-  .then(response => {
+/**
+ * Load module metadata from the manifest and initialise the landing page.
+ * This allows new modules to be added by simply updating projects.json
+ * without manually wiring them into the page.
+ */
+async function loadModules() {
+  try {
+    const response = await fetch('projects.json');
     if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
-  })
-  .then(init)
-  .catch(err => {
+    const modules = await response.json();
+    init(modules);
+  } catch (err) {
     console.error('Error loading projects:', err);
     init(FALLBACK_PROJECTS);
-  });
+  }
+}
+
+loadModules();

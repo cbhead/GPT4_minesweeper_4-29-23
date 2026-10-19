@@ -14,11 +14,18 @@
     <main>
         <h1>Minesweeper</h1>
         <div class="game-controls">
-            <label for="board-size">Board size: </label>
-            <input id="board-size" type="number" min="1" max="50" value="8" placeholder="Size">
-            <label for="mine-count">Mines: </label>
-            <input id="mine-count" type="number" min="1" max="2500" value="10" placeholder="Mines">
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
             <button id="start-game">Start Game</button>
+        </div>
+        <div class="status-bar">
+            <span>Mines left: <span id="mines-left">0</span></span>
+            <button id="restart-game">Restart</button>
+            <span>Time: <span id="timer">0</span>s</span>
         </div>
         <p id="consecutive-wins">Consecutive Wins: <span id="wins-count">0</span></p>
         <div id="game-board"></div>
